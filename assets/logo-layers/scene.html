@@ -1,0 +1,20 @@
+<!DOCTYPE html><html><head><style>
+html,body{margin:0;background:transparent;overflow:hidden}
+#stage{width:1024px;height:1024px;perspective:2200px;display:grid;place-items:center}
+#obj{position:relative;width:760px;height:760px;transform-style:preserve-3d}
+#obj img{position:absolute;inset:0;width:100%;height:100%}
+#shadow{position:absolute;left:50%;top:89%;width:520px;height:70px;margin-left:-260px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.45),rgba(0,0,0,0))}
+</style></head><body><div id="stage"><div id="shadow"></div><div id="obj"></div></div>
+<script>
+const D=new URLSearchParams(location.search).get('d');
+const obj=document.getElementById('obj');
+const DEPTH=64;
+fetch(D+'/spec.json').then(r=>r.json()).catch(()=>null);
+window.build=(spec)=>{
+  const L=[];for(let i=DEPTH;i>0;i-=1.5)L.push([i<5||i>DEPTH-3?'side_lit':'side',-i]);
+  L.push(['base',0],['sheen',1],['rim',2],...spec);
+  for(const [n,z] of L){const im=new Image();im.src=D+'/'+n+'.svg';im.style.transform=`translateZ(${z}px)`;obj.appendChild(im);}
+};
+window.pose=(rx,ry,ty)=>{obj.style.transform=`translateY(${ty}px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+  document.getElementById('shadow').style.transform=`translateX(${-ry*3}px) scale(${1-Math.abs(ty)/200})`;};
+</script></body></html>

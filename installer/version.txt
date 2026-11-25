@@ -1,0 +1,10 @@
+VSVersionInfo(
+  ffi=FixedFileInfo(filevers=(1,0,0,0), prodvers=(1,0,0,0)),
+  kids=[StringFileInfo([StringTable('040904B0', [
+    StringStruct('CompanyName', 'QASSIMZ'),
+    StringStruct('FileDescription', 'QASSIMZ Producer'),
+    StringStruct('FileVersion', '1.0.0'),
+    StringStruct('ProductName', 'QASSIMZ Producer'),
+    StringStruct('ProductVersion', '1.0.0'),
+    StringStruct('LegalCopyright', '© Ahmed Qassim — QASSIMZ')])]),
+  VarFileInfo([VarStruct('Translation', [1033, 1200])])])

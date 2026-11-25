@@ -1,0 +1,88 @@
+name: Build & Release
+
+# Every push to main: read VERSION from app/server.py.
+# If release vX.Y.Z doesn't exist yet → build Setup + Portable and publish it.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.v.outputs.tag }}
+      ver: ${{ steps.v.outputs.ver }}
+      exists: ${{ steps.v.outputs.exists }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VER=$(grep -oP '^VERSION = "\K[^"]+' app/server.py)
+          echo "ver=$VER" >> "$GITHUB_OUTPUT"; echo "tag=v$VER" >> "$GITHUB_OUTPUT"
+          if gh release view "v$VER" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then echo "exists=true" >> "$GITHUB_OUTPUT"; else echo "exists=false" >> "$GITHUB_OUTPUT"; fi
+
+  build:
+    needs: version
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+      - name: Smoke test (store + API)
+        working-directory: app
+        run: python -c "import store, server, ai; s=store.Store('../_t'); a=server.Api(s); i=a.episode_create({'title':'t','scenes':[{'text':'a b c'}]}); assert a.episode(i)['words']==3; print('ok')"
+      - name: Build app
+        run: python -m PyInstaller --noconfirm --clean qassimz-producer.spec
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+      - name: Arabic language file for the installer
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          $inno = "${env:ProgramFiles(x86)}\Inno Setup 6\Languages"
+          $found = Get-ChildItem -Path $inno -Recurse -Filter "Arabic.isl" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($found) { Copy-Item $found.FullName installer/Arabic.isl; exit 0 }
+          foreach ($u in @("https://raw.githubusercontent.com/jrsoftware/issrc/main/Files/Languages/Unofficial/Arabic.isl",
+                           "https://raw.githubusercontent.com/jrsoftware/issrc/main/Files/Languages/Arabic.isl")) {
+            try { Invoke-WebRequest $u -OutFile installer/Arabic.isl -ErrorAction Stop; exit 0 } catch {}
+          }
+      - name: Build installer
+        shell: pwsh
+        run: '& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVer=${{ needs.version.outputs.ver }}" installer\setup.iss'
+      - name: Portable zip
+        shell: pwsh
+        run: Compress-Archive -Path "dist/QASSIMZ Producer/*" -DestinationPath "dist/QASSIMZ-Producer-Portable.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: QASSIMZ-Producer
+          path: |
+            dist/QASSIMZ-Producer-Setup-*.exe
+            dist/QASSIMZ-Producer-Portable.zip
+      - name: Publish release
+        if: needs.version.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: QASSIMZ Producer ${{ needs.version.outputs.tag }}
+          make_latest: true
+          body: |
+            ## ⬇️ التحميل
+            - **QASSIMZ-Producer-Setup**: التسطيب العادي (موصى بيه، وبيحدّث نفسه)
+            - **Portable.zip**: من غير تسطيب
+
+            لو ظهرت شاشة SmartScreen: **More info ← Run anyway**.
+          files: |
+            dist/QASSIMZ-Producer-Setup-*.exe
+            dist/QASSIMZ-Producer-Portable.zip
