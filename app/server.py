@@ -21,7 +21,7 @@ from pathlib import Path
 import ai as AIm
 from store import STAGES, STAGE_AR, Store
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 REPO = "ahmedqassimtv-commits/qassimz-producer"
 
 mimetypes.add_type("font/woff2", ".woff2")
