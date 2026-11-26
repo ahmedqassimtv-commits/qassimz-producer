@@ -21,8 +21,11 @@ from pathlib import Path
 import ai as AIm
 from store import STAGES, STAGE_AR, Store
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 REPO = "ahmedqassimtv-commits/qassimz-producer"
+
+mimetypes.add_type("font/woff2", ".woff2")
+mimetypes.add_type("image/svg+xml", ".svg")
 
 
 def resource(rel: str) -> Path:
@@ -127,9 +130,49 @@ class Api:
         return True
 
     def reveal(self, path):
+        if not path:
+            return False
         if os.name == "nt":
-            subprocess.Popen(["explorer", "/select,", path])
+            subprocess.Popen(["explorer", "/select,", os.path.normpath(path)])
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", "-R", path])
+        else:
+            p = Path(path)
+            target = str(p.parent if p.is_file() else p)
+            subprocess.Popen(["xdg-open", target])
         return True
+
+    def win_minimize(self) -> bool:
+        if self.window is not None:
+            try:
+                self.window.minimize()
+                return True
+            except Exception:
+                pass
+        return False
+
+    def win_toggle_maximize(self) -> bool:
+        if self.window is not None:
+            try:
+                if getattr(self, "_is_maximized", False):
+                    self.window.restore()
+                    self._is_maximized = False
+                else:
+                    self.window.maximize()
+                    self._is_maximized = True
+                return self._is_maximized
+            except Exception:
+                pass
+        return False
+
+    def win_close(self) -> bool:
+        if self.window is not None:
+            try:
+                self.window.destroy()
+                return True
+            except Exception:
+                pass
+        return False
 
     def open_url(self, url):
         if url.startswith(("http://", "https://")):
@@ -289,18 +332,21 @@ def make_handler(api: Api, token: str, ui_dir: Path):
             if not self._authed():
                 return self._send(403, b"forbidden", "text/plain")
             path = urllib.parse.unquote(self.path[len(token) + 1:].split("?")[0])
-            if path.startswith("/thumb/"):
-                p = api.s.thumb(int(path.split("/")[2]))
-                return self._file(p) if p else self._send(404, b"", "text/plain")
-            if path.startswith("/file/"):
-                a = api.s.one("SELECT path FROM assets WHERE id=?", (int(path.split("/")[2]),))
-                return self._file(Path(a["path"])) if a and os.path.exists(a["path"]) else self._send(404, b"", "text/plain")
-            if path in ("/", ""):
-                path = "/index.html"
-            f = (ui_dir / path.lstrip("/")).resolve()
-            if ui_dir.resolve() not in f.parents or not f.is_file():
-                return self._send(404, b"not found", "text/plain")
-            return self._file(f)
+            try:
+                if path.startswith("/thumb/"):
+                    p = api.s.thumb(int(path.split("/")[2]))
+                    return self._file(p) if p else self._send(404, b"", "text/plain")
+                if path.startswith("/file/"):
+                    a = api.s.one("SELECT path FROM assets WHERE id=?", (int(path.split("/")[2]),))
+                    return self._file(Path(a["path"])) if a and os.path.exists(a["path"]) else self._send(404, b"", "text/plain")
+                if path in ("/", ""):
+                    path = "/index.html"
+                f = (ui_dir / path.lstrip("/")).resolve()
+                if ui_dir.resolve() not in f.parents or not f.is_file():
+                    return self._send(404, b"not found", "text/plain")
+                return self._file(f)
+            except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+                pass
 
         do_HEAD = do_GET
 
@@ -309,26 +355,57 @@ def make_handler(api: Api, token: str, ui_dir: Path):
             ctype = mimetypes.guess_type(str(p))[0] or "application/octet-stream"
             if p.suffix == ".js":
                 ctype = "text/javascript; charset=utf-8"
-            rng = self.headers.get("Range")
-            if rng and rng.startswith("bytes="):
-                a, _, b = rng[6:].partition("-")
-                start = int(a or 0)
-                end = min(int(b) if b else size - 1, size - 1)
-                with open(p, "rb") as fh:
-                    fh.seek(start)
-                    data = fh.read(end - start + 1)
-                self.send_response(206)
+            elif p.suffix == ".css":
+                ctype = "text/css; charset=utf-8"
+            elif p.suffix == ".html":
+                ctype = "text/html; charset=utf-8"
+            if size == 0:
+                self.send_response(200)
                 self.send_header("Content-Type", ctype)
-                self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
                 self.send_header("Accept-Ranges", "bytes")
-                self.send_header("Content-Length", str(len(data)))
+                self.send_header("Content-Length", "0")
                 self.end_headers()
-                if self.command != "HEAD":
-                    self.wfile.write(data)
+                return
+            rng = self.headers.get("Range")
+            start, end, code = 0, size - 1, 200
+            if rng and rng.startswith("bytes="):
+                a, _, b = rng[6:].split(",", 1)[0].partition("-")
+                try:
+                    if a == "" and b:
+                        start = max(0, size - int(b))
+                        end = size - 1
+                    else:
+                        start = int(a or 0)
+                        end = min(int(b) if b else size - 1, size - 1)
+                    if start < 0 or start >= size or start > end:
+                        self.send_response(416)
+                        self.send_header("Content-Range", f"bytes */{size}")
+                        self.send_header("Content-Length", "0")
+                        self.end_headers()
+                        return
+                    code = 206
+                except ValueError:
+                    start, end, code = 0, size - 1, 200
+            self.send_response(code)
+            self.send_header("Content-Type", ctype)
+            self.send_header("Accept-Ranges", "bytes")
+            self.send_header("Content-Length", str(end - start + 1))
+            if code == 206:
+                self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+            else:
+                self.send_header("Cache-Control", "max-age=3600")
+            self.end_headers()
+            if self.command == "HEAD":
                 return
             with open(p, "rb") as fh:
-                data = fh.read()
-            self._send(200, data, ctype, {"Accept-Ranges": "bytes"})
+                fh.seek(start)
+                left = end - start + 1
+                while left > 0:
+                    chunk = fh.read(min(65536, left))
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
+                    left -= len(chunk)
 
         def do_POST(self):
             if not self._authed():

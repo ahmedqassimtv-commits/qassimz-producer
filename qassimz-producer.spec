@@ -1,6 +1,6 @@
 # PyInstaller spec — one-folder build (fast startup)
 from PyInstaller.utils.hooks import collect_all
-datas = [("app/ui", "app/ui"), ("assets/logo.png", "assets"), ("assets/logo.ico", "assets"), ("README.md", ".")]
+datas = [("app/ui", "app/ui"), ("assets/logo.png", "assets"), ("assets/logo.ico", "assets"), ("assets/logo.svg", "assets"), ("README.md", ".")]
 binaries, hiddenimports = [], []
 for pkg in ("webview", "docx", "certifi"):
     d, b, h = collect_all(pkg); datas += d; binaries += b; hiddenimports += h

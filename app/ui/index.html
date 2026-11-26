@@ -4,16 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>QASSIMZ Producer</title>
-<link rel="icon" href="logo.png">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="alternate icon" href="logo.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="bg"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><div class="grain"></div></div>
+<div class="bg"></div>
 
 <div class="app">
   <aside class="side glass">
-    <div class="brand">
-      <img src="logo.png" alt="">
+    <div class="brand pywebview-drag-region" title="اسحب لتحريك النافذة">
+      <img src="logo.svg" alt="QASSIMZ Producer" onerror="this.onerror=null;this.src='logo.png'">
       <div><b>قَاسِمز</b><small>PRODUCER</small></div>
     </div>
     <nav id="mainNav"></nav>
@@ -28,7 +29,31 @@
       </div>
     </div>
   </aside>
-  <main id="main"></main>
+
+  <div class="main-stage">
+    <header class="topbar glass pywebview-drag-region" id="appTopbar">
+      <div class="top-start no-drag">
+        <span class="top-pill" id="topPageTitle">الرئيسية</span>
+        <span class="top-ver">v1.1.0</span>
+      </div>
+      <div class="top-end no-drag">
+        <button class="btn sm primary" id="topNewEp" type="button" title="حلقة جديدة (Ctrl+N)">＋ حلقة جديدة</button>
+        <span class="win-sep"></span>
+        <div class="win-controls">
+          <button class="win-btn" id="winMin" type="button" title="تصغير" aria-label="تصغير">
+            <svg viewBox="0 0 12 12"><line x1="2" y1="6" x2="10" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </button>
+          <button class="win-btn" id="winMax" type="button" title="تكبير / استعادة" aria-label="تكبير">
+            <svg viewBox="0 0 12 12"><rect x="2.2" y="2.2" width="7.6" height="7.6" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+          </button>
+          <button class="win-btn win-close" id="winClose" type="button" title="إغلاق" aria-label="إغلاق">
+            <svg viewBox="0 0 12 12"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+    <main id="main"></main>
+  </div>
 </div>
 
 <div id="layer"></div>

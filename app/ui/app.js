@@ -126,9 +126,15 @@ function renderNav() {
       { label: "حذف السلسلة", icon: "trash", do: async () => { if (confirm("حذف السلسلة؟ الحلقات هتفضل موجودة.")) { await api("series_delete", { id: s.id }); await refreshSeries(); render(); } } },
     ]); };
   });
-  const st = S.info.settings, ok = st.ai_keys[st.ai_provider] || st.ai_provider === "openai";
-  $("#aiLed").classList.toggle("on", !!ok);
+  const st = S.info.settings, ok = !!(st.ai_keys && st.ai_keys[st.ai_provider]);
+  $("#aiLed").classList.toggle("on", ok);
   $("#aiText").textContent = ok ? `AI: ${S.info.providers[st.ai_provider].name}` : "فعّل الذكاء الاصطناعي";
+  const tp = $("#topPageTitle");
+  if (tp) {
+    const navMatch = NAV.find(([v]) => v === S.route.view);
+    if (navMatch) tp.textContent = navMatch[1];
+    else if (S.route.view === "episode") tp.textContent = "تفاصيل الحلقة";
+  }
 }
 async function refreshSeries() { S.series = await api("series_list"); }
 
@@ -153,9 +159,9 @@ async function viewHome(main) {
   const st = S.info.stages, names = S.info.stage_names;
   const total = d.total || 1;
   const h = new Date().getHours();
-  const greet = h < 12 ? "صباح الخير" : h < 18 ? "أهلاً" : "مساء الخير";
+  const greet = h < 12 ? "صباح الإبداع" : h < 18 ? "أهلاً بيك في الاستوديو" : "مساء الإبداع";
   main.innerHTML = `<div class="view">
-    <div class="top"><div class="hello"><div><h1>${greet} يا أحمد 👋</h1><p class="muted">${d.total} حلقة · ${d.series.length} سلسلة · ${d.assets} ملف في المكتبة · ${d.ideas} فكرة على اللوحة</p></div></div>
+    <div class="top"><div class="hello"><div><h1>${greet} 👋</h1><p class="muted">${d.total} حلقة · ${d.series.length} سلسلة · ${d.assets} ملف في المكتبة · ${d.ideas} فكرة على اللوحة</p></div></div>
       <div class="actions"><button class="btn" id="hNewSeries">${ico("plus")}سلسلة جديدة</button><button class="btn primary" id="hNewEp">${ico("plus")}حلقة جديدة</button></div></div>
 
     <div class="card glass">
@@ -624,16 +630,28 @@ async function viewIdeas(main) {
   let data = await api("board");
   let view = JSON.parse(localStorage.getItem("qp-board-view") || '{"x":60,"y":60,"z":1}');
   let linkFrom = null, selId = null;
-  const apply = () => { world.style.transform = `translate(${view.x}px,${view.y}px) scale(${view.z})`; $("#zPct").textContent = Math.round(view.z * 100) + "%"; localStorage.setItem("qp-board-view", JSON.stringify(view)); };
+  let wiresRaf = 0;
+  const saveBoardView = debounce(() => {
+    try { localStorage.setItem("qp-board-view", JSON.stringify(view)); } catch (e) {}
+  }, 250);
+  const apply = () => {
+    world.style.transform = `translate(${view.x}px,${view.y}px) scale(${view.z})`;
+    $("#zPct").textContent = Math.round(view.z * 100) + "%";
+    saveBoardView();
+  };
   const toWorld = (cx, cy) => { const r = bw.getBoundingClientRect(); return { x: (cx - r.left - view.x) / view.z, y: (cy - r.top - view.y) / view.z }; };
 
   function drawWires() {
+    wiresRaf = 0;
     const pos = Object.fromEntries(data.items.map((i) => [i.id, i]));
     wires.innerHTML = data.links.map((l) => {
       const a = pos[l.a], b = pos[l.b]; if (!a || !b) return "";
       const ax = a.x + a.w / 2, ay = a.y + a.h / 2, bx = b.x + b.w / 2, by = b.y + b.h / 2, mx = (ax + bx) / 2;
-      return `<path d="M${ax} ${ay} C${mx} ${ay},${mx} ${by},${bx} ${by}" stroke="#ff4d2e" stroke-opacity=".55" stroke-width="2.5" fill="none" stroke-dasharray="6 6"/>`;
+      return `<path d="M${ax} ${ay} C${mx} ${ay},${mx} ${by},${bx} ${by}" stroke="#ff5a36" stroke-opacity=".55" stroke-width="2.5" fill="none" stroke-dasharray="6 6"/>`;
     }).join("");
+  }
+  function scheduleWires() {
+    if (!wiresRaf) wiresRaf = requestAnimationFrame(drawWires);
   }
   function noteHTML(it) {
     const isImg = it.type === "image";
@@ -657,8 +675,8 @@ async function viewIdeas(main) {
       $$(".note.sel").forEach((x) => x.classList.remove("sel")); el.classList.add("sel"); selId = id;
       const sx = e.clientX, sy = e.clientY, ox = it.x, oy = it.y; let moved = false;
       el.setPointerCapture(e.pointerId);
-      el.onpointermove = (m) => { moved = true; it.x = ox + (m.clientX - sx) / view.z; it.y = oy + (m.clientY - sy) / view.z; el.style.left = it.x + "px"; el.style.top = it.y + "px"; drawWires(); };
-      el.onpointerup = () => { el.onpointermove = null; if (moved) api("board_save", { item: { id, x: Math.round(it.x), y: Math.round(it.y) } }); };
+      el.onpointermove = (m) => { moved = true; it.x = ox + (m.clientX - sx) / view.z; it.y = oy + (m.clientY - sy) / view.z; el.style.left = it.x + "px"; el.style.top = it.y + "px"; scheduleWires(); };
+      el.onpointerup = () => { el.onpointermove = null; if (moved) { scheduleWires(); api("board_save", { item: { id, x: Math.round(it.x), y: Math.round(it.y) } }); } };
     };
     const txt = $(".txt", el);
     if (txt) {
@@ -797,7 +815,12 @@ function teleprompter(e) {
   $("#pMirror", p).onclick = () => p.classList.toggle("mirror");
   const close = () => { cancelAnimationFrame(raf); p.remove(); document.removeEventListener("keydown", key); };
   $("#pClose", p).onclick = close;
-  const key = (ev) => { if (ev.key === "Escape") close(); if (ev.key === " ") { ev.preventDefault(); toggle(); } if (ev.key === "ArrowDown") y += 80; if (ev.key === "ArrowUp") y = Math.max(0, y - 80); };
+  const key = (ev) => {
+    if (ev.code === "Escape") { ev.preventDefault(); close(); }
+    else if (ev.code === "Space") { ev.preventDefault(); toggle(); }
+    else if (ev.code === "ArrowDown") { ev.preventDefault(); y += 80; }
+    else if (ev.code === "ArrowUp") { ev.preventDefault(); y = Math.max(0, y - 80); }
+  };
   document.addEventListener("keydown", key);
   p.requestFullscreen?.().catch(() => {});
 }
@@ -857,7 +880,7 @@ function openSettings(focus) {
 function updateBanner(u) {
   if ($("#updBanner")) return;
   const d = document.createElement("div");
-  d.id = "updBanner"; d.className = "toast"; d.style.bottom = "auto"; d.style.top = "20px";
+  d.id = "updBanner"; d.className = "toast"; d.style.bottom = "auto"; d.style.top = "74px";
   d.innerHTML = `🎉 إصدار جديد ${esc(u.version)} <button class="btn sm primary">حدّث دلوقتي</button>`;
   document.body.appendChild(d);
   $("button", d).onclick = (ev) => busy(ev.currentTarget, () => api("install_update"));
@@ -865,13 +888,71 @@ function updateBanner(u) {
 
 /* ================================================================== boot */
 async function boot() {
+  // Wire integrated frameless Liquid Glass topbar controls
+  $("#winMin")?.addEventListener("click", () => api("win_minimize").catch(() => {}));
+  $("#winMax")?.addEventListener("click", () => api("win_toggle_maximize").catch(() => {}));
+  $("#winClose")?.addEventListener("click", () => api("win_close").catch(() => {}));
+  $("#appTopbar")?.addEventListener("dblclick", (e) => {
+    if (e.target.closest(".no-drag, button, input")) return;
+    api("win_toggle_maximize").catch(() => {});
+  });
+  $("#topNewEp")?.addEventListener("click", () => newEpisode({ series_id: S.boardSeries }));
+
   S.info = await api("info");
   await refreshSeries();
   $("#addSeries").innerHTML = ico("plus"); $("#addSeries").onclick = () => seriesModal();
-  $("#btnSettings").innerHTML = ico("settings"); $("#btnSettings").title = "الإعدادات"; $("#btnSettings").onclick = () => openSettings();
+  $("#btnSettings").innerHTML = ico("settings"); $("#btnSettings").title = "الإعدادات (Ctrl+,)"; $("#btnSettings").onclick = () => openSettings();
   $("#btnGithub").innerHTML = ico("github"); $("#btnGithub").title = "GitHub"; $("#btnGithub").onclick = () => api("open_url", { url: S.info.github });
   $("#btnSupport").innerHTML = ico("heart"); $("#btnSupport").title = "الدعم"; $("#btnSupport").onclick = () => api("open_url", { url: S.info.support });
   $("#aiPill").onclick = () => openSettings("ai");
+
+  /* Universal layout-independent keyboard shortcuts (Arabic & English via e.code) */
+  document.addEventListener("keydown", (e) => {
+    if ($(".prompter")) return;
+    const code = e.code;
+    const mod = e.ctrlKey || e.metaKey;
+    const active = document.activeElement;
+    const inInput = !!(active && active.matches("input, textarea, select, [contenteditable='true']"));
+
+    if (code === "Escape") {
+      if ($(".menu")) { e.preventDefault(); closeMenus(); return; }
+      const modals = $$(".modal");
+      if (modals.length) { e.preventDefault(); const top = modals[modals.length - 1]; top.close ? top.close() : top.remove(); return; }
+      if ($(".drawer")) { e.preventDefault(); $$(".drawer").forEach((d) => d.remove()); return; }
+      if (inInput) { e.preventDefault(); active.blur(); return; }
+      return;
+    }
+
+    if (mod && !e.altKey && code === "Comma") {
+      e.preventDefault();
+      if (!$(".modal")) openSettings();
+      return;
+    }
+
+    if (mod && !e.altKey && code === "KeyN") {
+      e.preventDefault();
+      if (!$(".modal")) newEpisode({ series_id: S.boardSeries });
+      return;
+    }
+
+    if (mod && !e.altKey && (code === "KeyK" || code === "KeyF")) {
+      const target = $("#lQ") || $("#pQ") || $("#qIdea") || $("#cIn");
+      if (target) {
+        e.preventDefault();
+        target.focus();
+        target.select?.();
+      }
+      return;
+    }
+
+    const digitMatch = /^Digit([1-6])$/.exec(code);
+    if (digitMatch && (e.altKey || (!inInput && !mod))) {
+      e.preventDefault();
+      const target = NAV[+digitMatch[1] - 1];
+      if (target) { S.boardSeries = null; go(target[0]); }
+    }
+  });
+
   render();
   setTimeout(async () => { const i = await api("info"); if (i.update) updateBanner(i.update); }, 8000);
 }
