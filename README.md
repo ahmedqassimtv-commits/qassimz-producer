@@ -77,3 +77,15 @@ python app/dev.py /tmp/data     # نفس البرنامج في المتصفح ل
 
 ---
 <div align="center">© 2026 أحمد قاسم — قَاسِمز · MIT License</div>
+
+<!-- QASSIMZ-LIQUID-GLASS-RELEASE -->
+---
+
+## ✨ الجديد في الإصدار `v1.3.0` — تصميم Apple Liquid Glass & أيقونات v2
+
+<img src="assets/logo.svg" width="72" height="72" align="right" alt="qassimz-producer (Pd)" />
+
+- أيقونة جديدة `Pd` (**v2 · Adobe 2022 Style**) بلون مرجاني-برتقالي (`#FF5729`).
+- توحيد ألوان المراحل وإزالة البنفسجي مع تحسين الزجاج السائل **Liquid Glass** وشاشات التثبيت المتحركة.
+
+<!-- /QASSIMZ-LIQUID-GLASS-RELEASE -->
