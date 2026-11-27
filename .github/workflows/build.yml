@@ -63,6 +63,16 @@ jobs:
       - name: Portable zip
         shell: pwsh
         run: Compress-Archive -Path "dist/QASSIMZ Producer/*" -DestinationPath "dist/QASSIMZ-Producer-Portable.zip"
+      - name: Build Delta Package (.qpkg + manifest.json)
+        shell: pwsh
+        run: |
+          $ver = ${{ needs.version.outputs.ver }}
+          $ver = ($ver -replace '^[vV]', '')
+          if (-not $ver) { $ver = '1.0.0' }
+          Invoke-WebRequest "https://raw.githubusercontent.com/ahmedqassimtv-commits/qassimz-hub/main/tools/qpkg_packager.py" -OutFile "qpkg_packager.py" -UseBasicParsing
+          python qpkg_packager.py pack --input "dist/QASSIMZ Producer" --output-dir "dist/delta" --app-id "qassimz-producer" --version "$ver"
+          python qpkg_packager.py verify --manifest "dist/delta/manifest.json" --qpkg "dist/delta/qassimz-producer-v$ver.qpkg"
+
       - uses: actions/upload-artifact@v4
         with:
           name: QASSIMZ-Producer
@@ -81,8 +91,12 @@ jobs:
             ## ⬇️ التحميل
             - **QASSIMZ-Producer-Setup**: التسطيب العادي (موصى بيه، وبيحدّث نفسه)
             - **Portable.zip**: من غير تسطيب
+            dist/delta/manifest.json
+            dist/delta/*.qpkg
 
             لو ظهرت شاشة SmartScreen: **More info ← Run anyway**.
           files: |
             dist/QASSIMZ-Producer-Setup-*.exe
             dist/QASSIMZ-Producer-Portable.zip
+            dist/delta/manifest.json
+            dist/delta/*.qpkg
