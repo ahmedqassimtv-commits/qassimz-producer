@@ -1,91 +1,85 @@
 <div align="center">
 
-<img src="docs/logo-3d.gif" width="190" alt="QASSIMZ Producer">
+<img src="assets/logo.svg" alt="QASSIMZ Producer" width="112" height="112" />
 
 # QASSIMZ Producer
+### مساحة إدارة الإنتاج وصناعة المحتوى
 
-**برنامج واحد لإنتاج الفيديوهات والسلاسل: من الفكرة للسكريبت للملحقات للنشر، ومعاه مساعد ذكاء اصطناعي.**
+<!-- اللغات المدعومة أسفل اللوجو مباشرة -->
+<p>
+  <img src="https://img.shields.io/badge/Language-العربية%20(RTL)-10B981?style=for-the-badge" alt="العربية (RTL)" /> <img src="https://img.shields.io/badge/Language-English-3B82F6?style=for-the-badge" alt="English" />
+</p>
 
-من **أحمد قاسم — قَاسِمز** · مجاني ومفتوح المصدر · Windows 10/11
+<p>
+  <a href="https://github.com/ahmedqassimtv-commits/qassimz-producer/releases/latest"><img src="https://img.shields.io/badge/Version-v1.3.0-8B5CF6?style=flat-square" alt="Version" /></a>
+  <img src="https://img.shields.io/badge/Platform-Windows%2010%2F11%20x64-18181B?style=flat-square" alt="Platform" />
+  <a href="https://github.com/ahmedqassimtv-commits/qassimz-hub/releases/latest"><img src="https://img.shields.io/badge/QASSIMZ-Creative%20Suite-0EA5E9?style=flat-square" alt="QASSIMZ Suite" /></a>
+</p>
 
-[⬇️ تحميل آخر إصدار](https://github.com/ahmedqassimtv-commits/qassimz-producer/releases/latest) ·
-[🐞 الدعم والإبلاغ عن مشكلة](https://github.com/ahmedqassimtv-commits/qassimz-producer/issues) ·
-[🌐 qassimz.com](https://qassimz.com)
+<p><em>Creative Production Board, Scripting & Publishing Workflow Manager</em></p>
 
-<img src="docs/home.png" width="880" alt="QASSIMZ Producer">
+<br />
+
+<img src="docs/preview-4k.png" alt="QASSIMZ Producer — 4K UHD Preview" width="100%" />
 
 </div>
 
 ---
 
-## ✨ كل حاجة في مكان واحد
+## 1. نظرة عامة
 
-| | |
-|---|---|
-| 🏠 **الرئيسية** | خط الإنتاج كله، والجاي في النشر، والمهام المفتوحة، وتسجيل أي فكرة في ثانية |
-| 🎬 **الحلقات والسلاسل** | لوحة Kanban: فكرة ← بحث ← سكريبت ← تسجيل ← مونتاج ← جاهز ← منشور (بالسحب والإفلات) |
-| 📝 **السكريبت** | هوك + مشاهد، ولكل مشهد: النص والمرئي والصوت والملفات المربوطة، والمدة بتتحسب لوحدها |
-| 🎤 **تيليبرومبتر** | شاشة كاملة للتسجيل، فيها تحكم في السرعة والخط ووضع المراية |
-| 📎 **الملحقات** | صور وفيديو وموسيقى وMOGRT وPSD لكل حلقة، وتسحبها على المشهد |
-| 💡 **لوحة الأفكار** | Whiteboard مفتوحة: أفكار ملونة وصور وتوصيلات، والفكرة تتحول لحلقة بضغطة |
-| 📚 **المكتبة** | كل ملفاتك بمصغّرات وتاجات وبحث، وتعرف كل ملف اتستخدم فين |
-| 📅 **التقويم** | تقويم النشر، وتسحب الحلقة على اليوم اللي هتنزل فيه |
-| 📦 **تصدير للمونتاج** | فولدر جاهز فيه السكريبت (Word + Markdown) والملفات متقسمة و`edit-list.csv` |
-
-## 🤖 الذكاء الاصطناعي
-- **أفكار حلقات** بالهوك والزاوية ونقط البحث.
-- **هيكل سكريبت كامل** بالعامية المصرية بأسلوب الحكي.
-- **إعادة صياغة:** أقصر، أطول، عامية، كوميدي، أبسط، تصحيح، و5 هوكات.
-- **لكل مشهد:** اقتراح المرئي والموسيقى وكلمات بحث للـ stock، وربط ملفات من مكتبتك.
-- **مهام الإنتاج** من السكريبت.
-- **باكدج النشر:** عناوين، ووصف بفهرس زمني، وتاجات، وأفكار ثمبنيل وشورتس.
-- **تلخيص المصادر**، و**تاجات للصور** (بيشوف الصورة)، و**تنظيم الأفكار المبعترة** في مجموعات.
-- **شات** عارف الحلقة أو كل القناة.
-
-**الخدمات:** GitHub Models (**مجاني** بتوكن من حسابك) · Claude (Anthropic) · Ollama / LM Studio (محلي).
-
-<table><tr><td><img src="docs/script.png"></td><td><img src="docs/board.png"></td></tr>
-<tr><td><img src="docs/ideas.png"></td><td><img src="docs/library.png"></td></tr>
-<tr><td><img src="docs/publish.png"></td><td><img src="docs/calendar.png"></td></tr></table>
-
-## 🚀 التسطيب
-1. نزّل `QASSIMZ-Producer-Setup-x.x.x.exe` من [Releases](https://github.com/ahmedqassimtv-commits/qassimz-producer/releases/latest).
-2. لو ظهرت شاشة SmartScreen: **More info ← Run anyway**.
-3. افتح ⚙ **الإعدادات ← الذكاء الاصطناعي**، واختار GitHub Models والصق التوكن.
-   (اعمله من [هنا](https://github.com/settings/personal-access-tokens/new) واختار صلاحية **Models: Read-only**.)
-
-<img src="docs/installer.gif" width="200" align="left" style="margin-left:16px">
-
-شاشة التسطيب نفسها فيها اللوجو بيلف 3D.
-
-البيانات كلها على جهازك في `%APPDATA%\QASSIMZ Producer`، والملفات في فولدر المكتبة اللي تختاره.
-<br clear="left">
-
-## 🛠️ للمطورين
-```bash
-pip install -r requirements.txt
-python app/main.py              # البرنامج
-python app/dev.py /tmp/data     # نفس البرنامج في المتصفح للتطوير
-```
-- `app/store.py`: قاعدة البيانات (SQLite) وكل العمليات.
-- `app/ai.py`: الذكاء الاصطناعي.
-- `app/server.py`: الـ API المحلي.
-- `app/ui/`: الواجهة.
-- `assets/logo-layers/`: اللوجو الـ 3D (طبقات SVG + سكريبت يرندر الفريمات).
-
-**نشر إصدار جديد:** غيّر `VERSION` في `app/server.py` واعمل push على `main`.
+أداة متكاملة لصنّاع المحتوى وفرق الإنتاج لتخطيط الحلقات، كتابة السكربتات، تتبع مراحل المونتاج والنشر عبر لوحة كانبان واضحة وسريعة.
 
 ---
-<div align="center">© 2026 أحمد قاسم — قَاسِمز · MIT License</div>
 
-<!-- QASSIMZ-LIQUID-GLASS-RELEASE -->
+## 2. المميزات الرئيسية
+
+1. **لوحة إنتاج تفاعلية (Production Board):** تتبع كل فيديو من الفكرة والسكربت حتى المونتاج والنشر.
+2. **إدارة المهام والمواعيد:** ترتيب أولويات التصوير والمونتاج والمراجعة بسهولة.
+3. **محرر سكربتات وملاحظات مدمج:** كتابة نصوص الحلقات وقوائم اللقطات داخل نفس البطاقة.
+4. **تخزين محلي سريع وموثوق:** يعمل بالكامل بدون إنترنت مع حفظ تلقائي فوري.
+5. **واجهة مريحة للعين:** تصميم داكن احترافي مخصص لساعات العمل الطويلة.
+
 ---
 
-## ✨ الجديد في الإصدار `v1.3.0` — تصميم Apple Liquid Glass & أيقونات v2
+## 3. التحميل والتثبيت
 
-<img src="assets/logo.svg" width="72" height="72" align="right" alt="qassimz-producer (Pd)" />
+1. **الطريقة الموصى بها (عبر QASSIMZ Hub):**
+   - حمّل وافتح [**QASSIMZ Hub**](https://github.com/ahmedqassimtv-commits/qassimz-hub/releases/latest) لتثبيت **QASSIMZ Producer** وتلقي جميع التحديثات التفاضلية (`.qpkg`) تلقائياً بضغطة زر.
+2. **التحميل المباشر من GitHub Releases:**
+   - افتح صفحة [**أحدث إصدار (v1.3.0)**](https://github.com/ahmedqassimtv-commits/qassimz-producer/releases/latest).
+   - حمّل ملف المثبّت (`Setup.exe`) للتثبيت العادي بدون صلاحيات مسؤول، أو النسخة المحمولة (`Portable.zip`) إن وجدت.
 
-- أيقونة جديدة `Pd` (**v2 · Adobe 2022 Style**) بلون مرجاني-برتقالي (`#FF5729`).
-- توحيد ألوان المراحل وإزالة البنفسجي مع تحسين الزجاج السائل **Liquid Glass** وشاشات التثبيت المتحركة.
+---
 
-<!-- /QASSIMZ-LIQUID-GLASS-RELEASE -->
+## 4. متطلبات التشغيل
+
+1. نظام التشغيل: Windows 10 / 11 (64-bit).
+
+---
+
+## 5. منظومة قَاسِمز الإبداعية (QASSIMZ Creative Suite)
+
+| # | التطبيق | الوصف | المستودع |
+|---:|---|---|---|
+| 1 | **QASSIMZ Hub** | مركز ومنظومة قَاسِمز الإبداعية | [GitHub](https://github.com/ahmedqassimtv-commits/qassimz-hub) |
+| 2 | **QASSIMZ Thumbs** | محرك مصغّرات ويندوز والعارض الفوري | [GitHub](https://github.com/ahmedqassimtv-commits/qassimz-thumbs) |
+| 3 | **QASSIMZ FONTs** | مدير الخطوط الاحترافي والمزامنة السحابية | [GitHub](https://github.com/ahmedqassimtv-commits/qassimz-fonts) |
+| 4 | **QASSIMZ Studio** | استوديو المونتاج والتحرير الاحترافي | [GitHub](https://github.com/ahmedqassimtv-commits/qassimz-studio) |
+| 5 | **QASSIMZ Producer** **(الحالي)** | مساحة إدارة الإنتاج وصناعة المحتوى | [GitHub](https://github.com/ahmedqassimtv-commits/qassimz-producer) |
+| 6 | **QASSIMZ Music** | مشغّل الموسيقى ومكتبة الصوتيات للمونتاج | [GitHub](https://github.com/ahmedqassimtv-commits/qassimz-music) |
+| 7 | **QDM — QASSIMZ Download Manager** | مدير التحميل السريع متعدد المسارات | [GitHub](https://github.com/ahmedqassimtv-commits/qdm) |
+| 8 | **QASSIMZ Organizer** | منظّم مجلدات المشاريع والملفات الإبداعية | [GitHub](https://github.com/ahmedqassimtv-commits/qassimz-organizer) |
+| 9 | **QASSIMZ Study** | منصة المذاكرة والتركيز وإدارة الدروس | [GitHub](https://github.com/ahmedqassimtv-commits/qassimz-study) |
+| 10 | **QASSIMZ VOX FX** | إضافة المؤثرات البصرية والصوتية لـ Premiere Pro | [GitHub](https://github.com/ahmedqassimtv-commits/qassimz-vox-fx) |
+| 11 | **QASSIMZ Captions** | إضافة الترجمة والكتابة التلقائية لـ Premiere Pro | [GitHub](https://github.com/ahmedqassimtv-commits/qassimz-captions) |
+| 12 | **QASSIMZ Footage** | إضافة البحث واستيراد اللقطات لـ Premiere Pro | [GitHub](https://github.com/ahmedqassimtv-commits/qassimz-footage) |
+| 13 | **QASSIMZ MOGRT Hub** | مكتبة ومدير قوالب MOGRT لـ Premiere Pro | [GitHub](https://github.com/ahmedqassimtv-commits/qassimz-mogrt-hub) |
+| 14 | **QASSIMZ MOGRT Maker** | صانع قوالب MOGRT الاحترافي لـ Premiere Pro | [GitHub](https://github.com/ahmedqassimtv-commits/qassimz-mogrt-maker) |
+| 15 | **QASSIMZ Export** | إضافة التصدير الذكي السريع لـ Premiere Pro | [GitHub](https://github.com/ahmedqassimtv-commits/qassimz-export) |
+
+---
+
+<div align="center">
+  <sub>© 2026 <strong>QASSIMZ Creative Suite</strong> — Ahmed Qassim. جميع الحقوق محفوظة.</sub>
+</div>
